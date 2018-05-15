@@ -1,0 +1,61 @@
+crucible_version: "4.4.6"
+
+
+crucible:
+  archive: "https://product-downloads.atlassian.com/software/crucible/downloads/crucible-{{ crucible_version }}.zip"
+# if placed in files, use: 
+  # archive: "crucible-{{ crucible_version }}.zip"
+
+  # /opt + the top level folder in the crucible zip, which is generally "fecru-VERSION"
+  home_dir: "/opt/fecru-{{ crucible_version }}"
+  # where to store the instance data for crucible
+  instance_dir: "/opt/crucible-instance"
+
+  group: crucible
+  user: crucible
+
+# Licensing information
+  license:
+    sid: B1DE-ZYZA-NGLM-P41L
+    fisheye: Evaluation
+    crucible: |
+      AAABMg0ODAoPeNp1kU1PAjEQhu/9FU286KGE7oIiSRN1dxPB/UABT16GZsCa0t20XZR/78Ji1hg8N
+      Jl05n3mnZmLrDQ0gz3lA8rDccjHwYhG8YIGfT4iMTppVeVVaURka6lWGunlHO0O7dXbmCY70DUc0
+      iSyeAxi8CgOYtYfMj4kUWk8SJ/DFsUHuNL0PmFj0N5Vunah8j1Zbok8sXupkmgcLvYVHhVRkWXJS
+      zS5T39ASQZK/0/qHAlvayS6Bb6idYe/oGs192A9WrEG7ZA0VOPRgJGYfFXK7n/Ncc34oNPl9XaFt
+      lgvXcMUjJPCbsAo1zZ1qNddbeNX7bB10m5tEouH9OmRBfk0ZrNgOWXP17cFmSe5aB5LOb/ph6MhJ
+      6dNNPXpJD6bOu9zVlv5Dg7/3uEbzbShZTAtAhUAiHLkzdzVQef09a9XzNyC4FBgJPICFFBFxweha
+      UjVfka/WTQaWLpGjfUEX02fb
+
+  http:
+    port: 8060
+  # hash of "admin"
+  admin_password: 21232F297A57A5A743894A0E4A801FC3
+  sql:
+    # enabled=false == use default h2 in-memory database
+    enabled: false 
+    dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    driver: com.mysql.jdbc.Driver
+    jdbcurl: "jdbc:mysql://example.com/fisheye" 
+    password: "bobbins" 
+    username: "dev" 
+  smtp:
+    # enabled=false == no configured smtp
+    enabled: false
+    # connection info.
+    starttls: false 
+    port: 587
+    host: mail.example.com
+    # Send email as person who caused the email to be sent
+    sendEmailsAsActioner: false 
+    # if sendEmailAsActioner==false, use this as sender
+    from: codeadmin@example.com
+    # extra email logging information for debugging
+    debug: false
+  
+  repositories:
+    - name:  watchmaker-docker-centos7
+      displayName: Watchmaker-Docker
+      description: Watchmaker Docker for Centos7
+      gitUrl: "https://github.com/jason-plus3/watchmaker-docker-centos7"
+

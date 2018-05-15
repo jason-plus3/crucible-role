@@ -1,0 +1,90 @@
+---
+
+#===============================
+# System prep
+- name: Install Java 1.8 and some basic dependencies
+  yum: 
+    name: "{{ item }}"
+    state: present
+  with_items:
+   - unzip
+   - java-1.8.0-openjdk
+   - libselinux-python
+   - libsemanage-python
+   - logrotate
+   - git
+
+- name: Add group "{{crucible.group}}"
+  group: 
+    name: "{{ crucible.group }}"
+
+- name: Add user "{{ crucible.user }}"
+  user: 
+    name: "{{ crucible.user }}"
+    group: "{{ crucible.group }}"
+    home: /usr/share/jboss-as
+
+#===============================
+# Install
+
+- name: Download and Crucible archive
+  unarchive: 
+    src: "{{ crucible.archive }}"
+    dest: "/opt"
+    remote_src: "{{ '://' in crucible.archive }}"
+    owner: "{{ crucible.user }}"
+    group: "{{ crucible.group }}"
+    mode: 0755
+
+
+- name: Create crucible instance directory
+  file:
+    path: "{{ crucible.instance_dir }}"
+    state: directory
+    owner: "{{ crucible.user }}"
+    group: "{{ crucible.group }}"
+    mode: 0755
+
+
+- name: Crucible configuration
+  template:
+    src: config.xml
+    dest: "{{ crucible.instance_dir }}"
+    owner: "{{ crucible.user }}"
+    group: "{{ crucible.group }}"
+    mode: 0740
+
+
+
+#===============================
+# Startup and config
+
+- name: Systemd unit file
+  template:
+    src: crucible.service
+    dest: /etc/systemd/system/
+
+- name: Start Crucible service
+  systemd:
+    name: crucible.service
+    state: started
+    enabled: yes
+
+    
+#===============================
+# Confirm that crucible is up
+- name: Waiting for open port
+  wait_for:
+    host: "{{ inventory_hostname }}"
+    port: "{{ crucible.http.port }}"
+
+- name: Grabbing home page content
+  uri:
+    url: "http://localhost:{{ crucible.http.port }}"
+    return_content: yes
+  register: crucible.page
+
+- name: Confirming that this server thinks that it is Crucible
+  fail:
+    msg: "Crucible did not start"
+  when: "'Crucible' not in crucible.page.content"

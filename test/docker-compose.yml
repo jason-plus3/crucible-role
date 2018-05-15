@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  crucible:
+    image: plus3-watchmaker-centos7
+    ports:
+      - "8060:8060"
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - .:/ansible
+      - ..:/ansible/roles/crucible-role
+    security_opt:
+      - seccomp:unconfined
+  # for testing connectivity
+  jira:
+    image: cptactionhank/atlassian-jira:latest
+    ports: 
+      - "8080:8080" 
+
+

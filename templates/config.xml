@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config control-bind="127.0.0.1:8059" version="1.0" 
+    admin-hash="{{ crucible.admin_password }}">
+    <!-- see example-config.xml and config.xsd for more documentation -->
+    <license SID="{{ crucible.license.sid }}">
+        <fisheye>{{ crucible.license.fisheye }}</fisheye>
+        <crucible>{{ crucible.license.crucible }}</crucible>
+    </license>
+    <web-server>
+        <http bind=":{{ crucible.http.port }}"/>
+    </web-server>
+    <security allow-anon="true" allow-cru-anon="true">
+        <built-in>
+            <signup enabled="true"/>
+        </built-in>
+        <admins>
+            <system-admins/>
+        </admins>
+        <avatar>
+            <disabled/>
+        </avatar>
+    </security>
+    <repository-defaults>
+        <linker/>
+        <allow/>
+        <tarball enabled="false" maxFileCount="0"/>
+        <security allow-anon="true"/>
+        <text-indexer enabled="true"/>
+        <watches enabled="true"/>
+        <commit-message-syntax syntax="plain"/>
+        <changeset-discussions enabled="true"/>
+        <show-checkout-url>true</show-checkout-url>
+    </repository-defaults>
+{% for repo in crucible.repositories %}
+    <repository name="{{ repo.name }}" display-name="{{ repo.displayName }}" description="{{ repo.description }}" store-diff="true" enabled="true">
+        <git location="{{ repo.gitUrl }}" renames="none"/>
+        <security use-defaults="true" allow-anon="false" allow-logged-in="false"/>
+    </repository>
+{% endfor %}
+    <check-for-updates/>
+    <!--
+     need to download the mysql jar and drop it in the right place
+     https://dev.mysql.com/downloads/connector/j/8.0.html
+     https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-8.0.11.zip
+     -->
+{% if crucible.sql.enabled %}
+ <database type="mysql">
+        <connection dialect="{{ crucible.sql.dialect }}" 
+            driver="{{ crucible.sql.driver }}" 
+            jdbcurl="{{ crucible.sql.jdbcurl }}" 
+            password="{{ crucible.sql.password }}" username="{{ crucible.sql.username }}" 
+            maxPoolSize="20" minPoolSize="5" driverSource="bundled"/>
+        <parameters>
+            useUnicode=true 
+            characterEncoding=UTF8 
+            connectionCollation=UTF8_bin
+        </parameters>
+    </database>
+{% endif %}
+{% if crucible.smtp.enabled %}
+    <smtp 
+        password="{{crucible.smtp.password}}" 
+        starttls="{{crucible.smtp.starttls}}" 
+        port="{{crucible.smtp.port}}" 
+        host="{{crucible.smtp.host}}" 
+        sendEmailsAsActioner="{{crucible.smtp.sendEmailsAsActioner}}" 
+        from="{{crucible.smtp.from}}" 
+        username="{{crucible.smtp.username}}" 
+        debug="{{crucible.smtp.debug}}"/>
+{% endif %}
+    <snippet/>
+</config>

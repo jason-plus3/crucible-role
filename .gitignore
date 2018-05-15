@@ -1,0 +1,5 @@
+.DS_Store
+files/xray-centos-2.0.2.tar.gz
+test/*.vault
+files/crucible-4.4.6.zip
+files/crucible-*.zip

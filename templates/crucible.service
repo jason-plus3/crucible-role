@@ -1,0 +1,16 @@
+[Unit]
+Description=Atlassian Crucible
+
+[Service]
+Type=forking
+StandardOutput=journal+console
+StandardError=journal+console
+User={{ crucible.user }}
+Group={{ crucible.group }}
+WorkingDirectory={{ crucible.instance_dir }}
+Environment=FISHEYE_INST={{ crucible.instance_dir }}
+ExecStart={{ crucible.home_dir }}/bin/start.sh
+ExecStop={{ crucible.home_dir }}/bin/stop.sh
+
+[Install]
+WantedBy=multi-user.target
